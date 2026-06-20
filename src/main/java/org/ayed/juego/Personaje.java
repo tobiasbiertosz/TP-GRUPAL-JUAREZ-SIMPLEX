@@ -36,4 +36,26 @@ public class Personaje extends Entidad {
 	public Equipamiento getEquipamiento() {
 		return equipamiento;
 	}
+
+	public int getVidaMaxima() {
+		return vidaBase + equipamiento.getVidaTotal();
+	}
+
+	public int getDanoAtaqueTotal() {
+		return danoBase + equipamiento.getDanoAtaqueTotal();
+	}
+
+	public int getDanoHechizoTotal() {
+		return equipamiento.getDanoHechizoTotal();
+	}
+
+	public int getManaTotal() {
+		return equipamiento.getManaTotal();
+	}
+
+	public int getArmaduraTotal() {
+		return equipamiento.getArmaduraTotal();
+	} 
+
+	
 }
