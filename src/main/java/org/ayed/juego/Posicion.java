@@ -1,4 +1,5 @@
 package org.ayed.juego;
+import java.util.Objects;
 
 public class Posicion {
 
@@ -25,4 +26,28 @@ public class Posicion {
     public void setColumna(int columna) {
         this.columna = columna;
     }
+    
+    @Override
+    public boolean equals(Object obj) {
+
+        if (this == obj)
+            return true;
+
+        if (!(obj instanceof Posicion))
+            return false;
+
+        Posicion otra = (Posicion) obj;
+
+        return fila == otra.fila
+            && columna == otra.columna;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+            fila,
+            columna
+        );
+    }
+
 }

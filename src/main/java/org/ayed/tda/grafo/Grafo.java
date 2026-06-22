@@ -2,6 +2,10 @@ package org.ayed.tda.grafo;
 
 import java.util.*;
 
+import org.ayed.tda.colaPrioridad.*;
+import org.ayed.tda.comparador.Comparador;
+
+
 /**
  * Esta implementación de Grafo representa un grafo no
  * dirigido.
@@ -149,4 +153,117 @@ public class Grafo<T> {
         }
         return adyacencias.get(vertice);
     }
+    
+    /*
+     * ALGORITMO A*
+     *
+     * Objetivo:
+     * Encontrar el camino más corto entre un origen y un destino en un grafo
+     * ponderado usando una heurística.
+     *
+     * Fórmula:
+     * f(n) = g(n) + h(n)
+     *
+     * Donde:
+     * g(n): costo real desde el origen hasta el nodo actual
+     * h(n): estimación del costo desde el nodo actual hasta el destino
+     *        (en este caso, heurística Manhattan)
+     *
+     * Idea general:
+     * - Expande primero los nodos con menor f(n)
+     * - Usa una cola de prioridad para ordenar exploración
+     * - Evita reexplorar nodos ya visitados
+     * - Guarda padres para reconstruir el camino final
+     *
+     * Complejidad:
+     * Tiempo: O(E log V)
+     * Espacio: O(V)
+     */
+    
+    public List<T> buscarAStar(T origen, T destino, Heuristica<T> h) {
+
+        /*
+         * PRE:
+         * - origen y destino existen en el grafo
+         * - h != null
+         *
+         * POS:
+         * - devuelve el camino más corto o lista vacía
+         */
+
+        Map<T, Integer> g = new HashMap<>();
+        Map<T, Integer> f = new HashMap<>();
+        Map<T, T> padre = new HashMap<>();
+        Set<T> cerrados = new HashSet<>();
+
+        g.put(origen, 0);
+        f.put(origen, h.calcularPuntaje(origen, destino));
+
+        Comparador<T> comp = new Comparador<T>() {
+            @Override
+            public int comparar(T a, T b) {
+                return f.get(a) - f.get(b);
+            }
+        };
+
+        ColaPrioridad<T> abiertos = new ColaPrioridad<>(comp);
+        abiertos.agregar(origen);
+
+        while (!abiertos.vacio()) {
+
+            T actual = abiertos.eliminar();
+
+            if (actual.equals(destino)) {
+                return reconstruir(padre, destino);
+            }
+
+            cerrados.add(actual);
+
+            for (T vecino : obtenerAdyacentes(actual).keySet()) {
+
+                if (cerrados.contains(vecino)) continue;
+
+                int costo = g.get(actual) + obtenerArista(actual, vecino);
+
+                if (!g.containsKey(vecino) || costo < g.get(vecino)) {
+
+                    g.put(vecino, costo);
+
+                    f.put(vecino,
+                            costo + h.calcularPuntaje(vecino, destino)
+                    );
+
+                    padre.put(vecino, actual);
+
+                    abiertos.agregar(vecino);
+                }
+            }
+        }
+
+        return new ArrayList<>();
+    }
+    
+    
+    private List<T> reconstruir(Map<T, T> padre, T actual) {
+
+        /*
+         * PRE:
+         * actual != null
+         * padre contiene relaciones válidas del A*
+         *
+         * POS:
+         * retorna camino desde origen hasta destino
+         */
+
+        List<T> camino = new ArrayList<>();
+
+        while (actual != null) {
+            camino.add(actual);
+            actual = padre.get(actual);
+        }
+
+        Collections.reverse(camino);
+        return camino;
+    }
+    
 }
