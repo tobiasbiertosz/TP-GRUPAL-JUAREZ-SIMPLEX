@@ -317,4 +317,72 @@ public class Mazmorra {
 		System.out.println();
 	}
 
+	// MÉTODO AUXILIAR para generarElementosAleatorios
+	/**
+	 * PRE: -
+	 * POS: Devuelve una Posicion aleatoria dentro de la mazmorra que sea de tipo
+	 * NORMAL y que no contenga ninguna entidad.
+	 */
+	private Posicion obtenerPosicionVaciaAleatoria() {
+		Random random;
+		int filaAleatoria;
+		int columnaAleatoria;
+		boolean encontrada;
+		Celda celdaCandidata;
+		Posicion posicionEncontrada;
+
+		random = new Random();
+		encontrada = false;
+		filaAleatoria = 0;
+		columnaAleatoria = 0;
+
+		while (!encontrada) {
+			// random.nextInt(filas) devuelve un número entero entre 0 a filas - 1 (aclarado
+			// en el parametro del nextInt)
+			filaAleatoria = random.nextInt(filas);
+			columnaAleatoria = random.nextInt(columnas);
+			celdaCandidata = celdas.elemento(filaAleatoria, columnaAleatoria);
+
+			if (celdaCandidata.getTipo() == TipoCelda.NORMAL && celdaCandidata.getEntidad() == null) {
+				encontrada = true;
+			}
+		}
+
+		posicionEncontrada = new Posicion(filaAleatoria, columnaAleatoria);
+		return posicionEncontrada;
+	}
+
+	/**
+	 * PRE: Las cantidades deben ser mayores o iguales a 0 y la suma total de
+	 * elementos
+	 * no debe superar la capacidad de celdas transitables de la mazmorra.
+	 * POST: Distribuye de forma aleatoria las paredes y las celdas elementales
+	 * según los parámetros indicados.
+	 */
+	public void generarElementosAleatorios(int cantidadParedes, int cantidadFuego, int cantidadHielo,
+			int cantidadElectricidad) {
+		int k;
+		Posicion posicionVacia;
+
+		for (k = 0; k < cantidadParedes; k++) {
+			posicionVacia = obtenerPosicionVaciaAleatoria();
+			colocarPared(posicionVacia.getFila(), posicionVacia.getColumna());
+		}
+
+		for (k = 0; k < cantidadFuego; k++) {
+			posicionVacia = obtenerPosicionVaciaAleatoria();
+			colocarFuego(posicionVacia.getFila(), posicionVacia.getColumna());
+		}
+
+		for (k = 0; k < cantidadHielo; k++) {
+			posicionVacia = obtenerPosicionVaciaAleatoria();
+			colocarHielo(posicionVacia.getFila(), posicionVacia.getColumna());
+		}
+
+		for (k = 0; k < cantidadElectricidad; k++) {
+			posicionVacia = obtenerPosicionVaciaAleatoria();
+			colocarElectricidad(posicionVacia.getFila(), posicionVacia.getColumna());
+		}
+	}
+
 }
