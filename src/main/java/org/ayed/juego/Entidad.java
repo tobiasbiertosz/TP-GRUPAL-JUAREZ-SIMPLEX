@@ -9,11 +9,17 @@ public abstract class Entidad {
 	protected String nombre;
 
 	protected int vidaActual;
+
+	// Capacidad máxima de vida de la Entidad
 	protected int vidaBase;
 
 	protected int danoBase;
 
 	protected Posicion posicion;
+
+	// Nuevos atributos para soportar los efectos de las celdas especiales
+	protected double multiplicadorDanioEmitido; // Para el estado CONGELADA
+	protected double multiplicadorDanioRecibido; // Para el estado ELECTRIFICADA
 
 	/**
 	 * Constructor de una entidad.
@@ -24,7 +30,8 @@ public abstract class Entidad {
 	 * @param posicion Posición inicial.
 	 *
 	 * @pre: posicion != null
-	 * @post: se crea una nueva entidad con los atributos indicados.
+	 * @post: se crea una nueva entidad con los atributos indicados y los
+	 *        multiplicadores elementales inicializados en 1.0 (estado normal).
 	 */
 	public Entidad(String nombre, int vida, int dano, Posicion posicion) {
 
@@ -36,6 +43,14 @@ public abstract class Entidad {
 		this.danoBase = dano;
 
 		this.posicion = posicion;
+
+		// En la clase Combate se deberán utilizar:
+
+		// DañoFinal = dañoBase * 0.5
+		this.multiplicadorDanioEmitido = 1.0;
+
+		// DañoSufridoReal = DañoDeLaEntidad * 1.5
+		this.multiplicadorDanioRecibido = 1.0;
 	}
 
 	/**
@@ -89,6 +104,10 @@ public abstract class Entidad {
 	 * @param nuevaColumna Columna destino.
 	 *
 	 * @return true si pudo moverse.
+	 * 
+	 *         Es una versión más simple del método <desplazarJugador> que se
+	 *         encuentra en la clase Mazmorra
+	 *         Ideal para que se use este método en la IA.
 	 */
 	public boolean mover(Mazmorra mazmorra, int nuevaFila, int nuevaColumna) {
 
@@ -98,36 +117,49 @@ public abstract class Entidad {
 
 			posicion.setFila(nuevaFila);
 			posicion.setColumna(nuevaColumna);
-
-			mazmorra.aplicarEfectoCelda(this);
-
 			movio = true;
 		}
 
 		return movio;
 	}
 
-	public String getNombre() {
-		return nombre;
-	}
-
-	public int getVidaActual() {
-		return vidaActual;
-	}
-
-	public int getVidaBase() {
-		return vidaBase;
-	}
-
-	public int getDanoBase() {
-		return danoBase;
-	}
-	
-	public int getDano() {
-		return danoBase  ; // IDEA A FUTURO: return danoBAse + danoExtraDeLasArmas...habilidades, etc
-	}
-
+	/**
+	 * @pre: -
+	 * @post: Devuelve la posición actual de la entidad.
+	 */
 	public Posicion getPosicion() {
-		return posicion;
+		return this.posicion;
+	}
+
+	/**
+	 * @pre: -
+	 * @post: Devuelve el modificador de daño que emite la entidad.
+	 */
+	public double getMultiplicadorDanioEmitido() {
+		return this.multiplicadorDanioEmitido;
+	}
+
+	/**
+	 * @pre: multiplicador >= 0.0
+	 * @post: Establece el nuevo multiplicador para el daño que realiza la entidad.
+	 */
+	public void setMultiplicadorDanioEmitido(double multiplicador) {
+		this.multiplicadorDanioEmitido = multiplicador;
+	}
+
+	/**
+	 * @pre: -
+	 * @post: Devuelve el modificador de daño que recibe la entidad.
+	 */
+	public double getMultiplicadorDanioRecibido() {
+		return this.multiplicadorDanioRecibido;
+	}
+
+	/**
+	 * @pre: multiplicador >= 0.0
+	 * @post: Establece el nuevo multiplicador para el daño que sufre la entidad.
+	 */
+	public void setMultiplicadorDanioRecibido(double multiplicador) {
+		this.multiplicadorDanioRecibido = multiplicador;
 	}
 }
