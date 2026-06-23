@@ -27,7 +27,7 @@ public class EvaluadorRiesgo {
         // costo base del grafo
         int base = grafo.obtenerArista(origen, destino);
 
-        // aquí podrías aumentar riesgo si quieres
+        // aquí podrías aumentar riesgo 
         // ejemplo simple: sin modificación
 
         return base;

@@ -9,6 +9,7 @@ import org.ayed.tda.comparador.Comparador;
 import org.ayed.tda.colaPrioridad.ColaPrioridad;
 import org.ayed.tda.vector.VectorDinamico;
 
+import org.ayed.informe.*;
 
 
 /**
@@ -228,6 +229,7 @@ public class Grafo<T> {
         abiertos.agregar(origen);
 
         while (!abiertos.vacio()) {
+        	Estadisticas.op();
 
             T actual = abiertos.eliminar();
 
@@ -239,6 +241,8 @@ public class Grafo<T> {
             cerrados.add(actual);
 
             for (T vecino : obtenerAdyacentes(actual).keySet()) {
+            	
+            	Estadisticas.op();
 
                 if (cerrados.contains(vecino)) {
                     continue;
@@ -291,6 +295,152 @@ public class Grafo<T> {
         }
 
         return camino;
+    }
+    
+    
+    /**
+     * BFS para encontrar camino más corto en número de pasos.
+     *
+     * PRE:
+     * - origen y destino existen
+     *
+     * POS:
+     * - retorna camino mínimo en cantidad de aristas
+     * - si no existe, vector vacío
+     */
+    public VectorDinamico<T> bfs(T origen, T destino) {
+
+        VectorDinamico<T> cola =
+                new VectorDinamico<>();
+
+        VectorDinamico<T> camino =
+                new VectorDinamico<>();
+
+        Map<T, T> padre =
+                new HashMap<>();
+
+        Set<T> visitado =
+                new HashSet<>();
+
+        cola.agregar(origen);
+        visitado.add(origen);
+
+        while (cola.tamanio() > 0) {
+        	Estadisticas.op();
+
+            T actual =
+                    cola.obtener(0);
+
+            cola.eliminar(0);
+
+            if (actual.equals(destino)) {
+                return reconstruirBFS(padre, destino);
+            }
+
+            for (T vecino :
+                    obtenerAdyacentes(actual).keySet()) {
+            	Estadisticas.op();
+
+                if (!visitado.contains(vecino)) {
+
+                    visitado.add(vecino);
+                    padre.put(vecino, actual);
+
+                    cola.agregar(vecino);
+                }
+            }
+        }
+
+        return new VectorDinamico<>();
+    }
+    
+    private VectorDinamico<T> reconstruirBFS(
+            Map<T, T> padre,
+            T actual
+    ) {
+
+        VectorDinamico<T> inverso =
+                new VectorDinamico<>();
+
+        while (actual != null) {
+
+            inverso.agregar(actual);
+            actual = padre.get(actual);
+        }
+
+        VectorDinamico<T> camino =
+                new VectorDinamico<>();
+
+        for (int i = inverso.tamanio() - 1; i >= 0; i--) {
+            camino.agregar(inverso.obtener(i));
+        }
+
+        return camino;
+    }
+    
+    public VectorDinamico<T> dijkstra(T origen, T destino) {
+
+        Map<T, Integer> dist =
+                new HashMap<>();
+
+        Map<T, T> padre =
+                new HashMap<>();
+
+        Set<T> visitado =
+                new HashSet<>();
+
+        Comparador<T> comp =
+                new Comparador<T>() {
+
+            @Override
+            public int comparar(T a, T b) {
+                return dist.get(a) - dist.get(b);
+            }
+        };
+
+        ColaPrioridad<T> cola =
+                new ColaPrioridad<>(comp);
+
+        dist.put(origen, 0);
+        cola.agregar(origen);
+
+        while (!cola.vacio()) {
+        	Estadisticas.op();
+
+
+            T actual =
+                    cola.eliminar();
+
+            if (actual.equals(destino)) {
+                return reconstruirBFS(padre, destino);
+            }
+
+            if (visitado.contains(actual)) {
+                continue;
+            }
+
+            visitado.add(actual);
+
+            for (T vecino : obtenerAdyacentes(actual).keySet()) {
+            	Estadisticas.op();
+
+
+                int nuevoCosto =
+                        dist.get(actual)
+                        + obtenerArista(actual, vecino);
+
+                if (!dist.containsKey(vecino)
+                        || nuevoCosto < dist.get(vecino)) {
+
+                    dist.put(vecino, nuevoCosto);
+                    padre.put(vecino, actual);
+
+                    cola.agregar(vecino);
+                }
+            }
+        }
+
+        return new VectorDinamico<>();
     }
     
 }
