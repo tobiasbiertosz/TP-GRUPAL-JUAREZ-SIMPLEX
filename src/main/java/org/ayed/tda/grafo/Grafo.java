@@ -1,9 +1,14 @@
 package org.ayed.tda.grafo;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-import org.ayed.tda.colaPrioridad.*;
 import org.ayed.tda.comparador.Comparador;
+import org.ayed.tda.colaPrioridad.ColaPrioridad;
+import org.ayed.tda.vector.VectorDinamico;
+
 
 
 /**
@@ -180,33 +185,46 @@ public class Grafo<T> {
      * Espacio: O(V)
      */
     
-    public List<T> buscarAStar(T origen, T destino, Heuristica<T> h) {
-
-        /*
-         * PRE:
-         * - origen y destino existen en el grafo
-         * - h != null
-         *
-         * POS:
-         * - devuelve el camino más corto o lista vacía
-         */
+    /**
+     * Ejecuta búsqueda A* para encontrar el camino más corto.
+     *
+     * PRE:
+     * - origen y destino existen
+     * - h != null
+     *
+     * POS:
+     * - devuelve camino desde origen a destino
+     * - si no existe devuelve vector vacío
+     *
+     * Complejidad:
+     * O((V + E) log V)
+     */
+    public VectorDinamico<T> buscarAStar(
+            T origen,
+            T destino,
+            Heuristica<T> h
+    ) {
 
         Map<T, Integer> g = new HashMap<>();
         Map<T, Integer> f = new HashMap<>();
         Map<T, T> padre = new HashMap<>();
+
         Set<T> cerrados = new HashSet<>();
 
         g.put(origen, 0);
-        f.put(origen, h.calcularPuntaje(origen, destino));
+
+        f.put(origen,h.calcularPuntaje(origen, destino));
 
         Comparador<T> comp = new Comparador<T>() {
+
             @Override
             public int comparar(T a, T b) {
-                return f.get(a) - f.get(b);
+                return f.get(b) - f.get(a);
             }
         };
 
         ColaPrioridad<T> abiertos = new ColaPrioridad<>(comp);
+
         abiertos.agregar(origen);
 
         while (!abiertos.vacio()) {
@@ -214,24 +232,24 @@ public class Grafo<T> {
             T actual = abiertos.eliminar();
 
             if (actual.equals(destino)) {
-                return reconstruir(padre, destino);
+                return reconstruir(padre, destino
+                );
             }
 
             cerrados.add(actual);
 
             for (T vecino : obtenerAdyacentes(actual).keySet()) {
 
-                if (cerrados.contains(vecino)) continue;
+                if (cerrados.contains(vecino)) {
+                    continue;
+                }
 
-                int costo = g.get(actual) + obtenerArista(actual, vecino);
+                int costo = g.get(actual) + obtenerArista(actual,vecino);
 
                 if (!g.containsKey(vecino) || costo < g.get(vecino)) {
-
                     g.put(vecino, costo);
 
-                    f.put(vecino,
-                            costo + h.calcularPuntaje(vecino, destino)
-                    );
+                    f.put(vecino, costo + h.calcularPuntaje(vecino, destino));
 
                     padre.put(vecino, actual);
 
@@ -240,29 +258,38 @@ public class Grafo<T> {
             }
         }
 
-        return new ArrayList<>();
+        return new VectorDinamico<>();
     }
     
     
-    private List<T> reconstruir(Map<T, T> padre, T actual) {
+    /**
+     * Reconstruye el camino calculado por A*.
+     *
+     * PRE: actual != null
+     * POS: devuelve camino ordenado
+     *
+     * Complejidad:
+     * O(V²)
+     */
+    private VectorDinamico<T> reconstruir(Map<T, T> padre, T actual) {
 
-        /*
-         * PRE:
-         * actual != null
-         * padre contiene relaciones válidas del A*
-         *
-         * POS:
-         * retorna camino desde origen hasta destino
-         */
-
-        List<T> camino = new ArrayList<>();
+        VectorDinamico<T> inverso = new VectorDinamico<>();
 
         while (actual != null) {
-            camino.add(actual);
+
+            inverso.agregar(actual);
+
             actual = padre.get(actual);
         }
 
-        Collections.reverse(camino);
+        VectorDinamico<T> camino =
+                new VectorDinamico<>();
+
+        for (int i =inverso.tamanio() - 1; i >= 0; i--) {
+
+            camino.agregar(inverso.obtener(i));
+        }
+
         return camino;
     }
     

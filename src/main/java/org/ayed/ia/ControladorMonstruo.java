@@ -7,8 +7,7 @@ import org.ayed.juego.Posicion;
 import org.ayed.tda.grafo.Grafo;
 import org.ayed.tda.grafo.HeuristicaManhattan;
 
-import java.util.List;
-
+import org.ayed.tda.vector.*;
 /*
  * CONTROLADOR DEL MONSTRUO
  *
@@ -40,16 +39,16 @@ public class ControladorMonstruo {
 
             estado = EstadoAlerta.ALERTA;
 
-            List<Posicion> camino =
+            VectorDinamico<Posicion> camino =
                     grafo.buscarAStar(
                             m.getPosicion(),
                             p.getPosicion(),
                             new HeuristicaManhattan()
                     );
 
-            if (camino != null && camino.size() > 1) {
+            if (camino.tamanio() > 1) {
 
-                Posicion next = camino.get(1);
+                Posicion next = camino.obtener(1);
 
                 m.mover(
                         mazmorra,

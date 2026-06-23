@@ -6,16 +6,17 @@ import org.ayed.juego.Monstruo;
 import org.ayed.juego.Personaje;
 import org.ayed.juego.Posicion;
 
-
+import org.ayed.tda.grafo.*;
 import org.ayed.tda.grafo.Heuristica;
 import org.ayed.tda.grafo.HeuristicaManhattan;
+import org.ayed.tda.vector.VectorDinamico;
 import org.ayed.ia.ControladorMonstruo;
 import org.ayed.tda.grafo.Grafo;
 
-import java.util.List;
 
 public class Main {
 	public static void main(String[] args) {
+		
 		
 
 		Personaje heroe = new Personaje("Guerrero", 100, 20, new Posicion(0, 0));
