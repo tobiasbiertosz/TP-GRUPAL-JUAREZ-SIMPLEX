@@ -28,39 +28,19 @@ public class ControladorMonstruo {
 
     private EstadoAlerta estado = EstadoAlerta.EXPLORACION;
 
-    public void actualizar(
-            Monstruo m,
-            Personaje p,
-            Mazmorra mazmorra,
-            Grafo<Posicion> grafo
-    ) {
+    public void actualizar(Monstruo m, Personaje p, Mazmorra mazmorra, Grafo<Posicion> grafo) {
 
         if (detector.detectar(m, p)) {
-
             estado = EstadoAlerta.ALERTA;
-
-            VectorDinamico<Posicion> camino =
-                    grafo.buscarAStar(
-                            m.getPosicion(),
-                            p.getPosicion(),
-                            new HeuristicaManhattan()
-                    );
+            VectorDinamico<Posicion> camino =grafo.buscarAStar(m.getPosicion(), p.getPosicion(), new HeuristicaManhattan());
 
             if (camino.tamanio() > 1) {
-
                 Posicion next = camino.obtener(1);
-
-                m.mover(
-                        mazmorra,
-                        next.getFila(),
-                        next.getColumna()
-                );
+                m.mover(mazmorra, next.getFila(), next.getColumna());
             }
 
         } else {
-
             estado = EstadoAlerta.EXPLORACION;
-
             random.moverAleatorio(m, mazmorra);
         }
     }

@@ -18,12 +18,8 @@ public class DetectorJugador {
 
     public boolean detectar(Monstruo m, Personaje p) {
 
-        int distancia =
-                Math.abs(m.getPosicion().getFila()
-                - p.getPosicion().getFila())
-                +
-                Math.abs(m.getPosicion().getColumna()
-                - p.getPosicion().getColumna());
+        int distancia = Math.abs(m.getPosicion().getFila() - p.getPosicion().getFila()) + 
+        		Math.abs(m.getPosicion().getColumna() - p.getPosicion().getColumna());
 
         return distancia <= 3;
     }

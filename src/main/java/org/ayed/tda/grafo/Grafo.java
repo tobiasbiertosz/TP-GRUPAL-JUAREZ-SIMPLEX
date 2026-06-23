@@ -310,17 +310,11 @@ public class Grafo<T> {
      */
     public VectorDinamico<T> bfs(T origen, T destino) {
 
-        VectorDinamico<T> cola =
-                new VectorDinamico<>();
+        VectorDinamico<T> cola = new VectorDinamico<>();
+        VectorDinamico<T> camino = new VectorDinamico<>();
 
-        VectorDinamico<T> camino =
-                new VectorDinamico<>();
-
-        Map<T, T> padre =
-                new HashMap<>();
-
-        Set<T> visitado =
-                new HashSet<>();
+        Map<T, T> padre = new HashMap<>();
+        Set<T> visitado = new HashSet<>();
 
         cola.agregar(origen);
         visitado.add(origen);
@@ -328,9 +322,7 @@ public class Grafo<T> {
         while (cola.tamanio() > 0) {
         	Estadisticas.op();
 
-            T actual =
-                    cola.obtener(0);
-
+            T actual = cola.obtener(0);
             cola.eliminar(0);
 
             if (actual.equals(destino)) {
@@ -354,22 +346,16 @@ public class Grafo<T> {
         return new VectorDinamico<>();
     }
     
-    private VectorDinamico<T> reconstruirBFS(
-            Map<T, T> padre,
-            T actual
-    ) {
+    private VectorDinamico<T> reconstruirBFS(Map<T, T> padre, T actual) {
 
-        VectorDinamico<T> inverso =
-                new VectorDinamico<>();
+        VectorDinamico<T> inverso = new VectorDinamico<>();
 
         while (actual != null) {
-
             inverso.agregar(actual);
             actual = padre.get(actual);
         }
 
-        VectorDinamico<T> camino =
-                new VectorDinamico<>();
+        VectorDinamico<T> camino = new VectorDinamico<>();
 
         for (int i = inverso.tamanio() - 1; i >= 0; i--) {
             camino.agregar(inverso.obtener(i));
@@ -380,17 +366,13 @@ public class Grafo<T> {
     
     public VectorDinamico<T> dijkstra(T origen, T destino) {
 
-        Map<T, Integer> dist =
-                new HashMap<>();
+        Map<T, Integer> dist = new HashMap<>();
 
-        Map<T, T> padre =
-                new HashMap<>();
+        Map<T, T> padre = new HashMap<>();
 
-        Set<T> visitado =
-                new HashSet<>();
+        Set<T> visitado = new HashSet<>();
 
-        Comparador<T> comp =
-                new Comparador<T>() {
+        Comparador<T> comp = new Comparador<T>() {
 
             @Override
             public int comparar(T a, T b) {
@@ -398,18 +380,14 @@ public class Grafo<T> {
             }
         };
 
-        ColaPrioridad<T> cola =
-                new ColaPrioridad<>(comp);
+        ColaPrioridad<T> cola = new ColaPrioridad<>(comp);
 
         dist.put(origen, 0);
         cola.agregar(origen);
 
         while (!cola.vacio()) {
         	Estadisticas.op();
-
-
-            T actual =
-                    cola.eliminar();
+            T actual = cola.eliminar();
 
             if (actual.equals(destino)) {
                 return reconstruirBFS(padre, destino);
@@ -424,13 +402,9 @@ public class Grafo<T> {
             for (T vecino : obtenerAdyacentes(actual).keySet()) {
             	Estadisticas.op();
 
+                int nuevoCosto = dist.get(actual) + obtenerArista(actual, vecino);
 
-                int nuevoCosto =
-                        dist.get(actual)
-                        + obtenerArista(actual, vecino);
-
-                if (!dist.containsKey(vecino)
-                        || nuevoCosto < dist.get(vecino)) {
+                if (!dist.containsKey(vecino) || nuevoCosto < dist.get(vecino)) {
 
                     dist.put(vecino, nuevoCosto);
                     padre.put(vecino, actual);
