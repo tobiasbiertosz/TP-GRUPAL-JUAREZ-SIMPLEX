@@ -17,7 +17,6 @@ import org.ayed.tda.grafo.Grafo;
 public class Main {
 	public static void main(String[] args) {
 		
-		
 
 		Personaje heroe = new Personaje("Guerrero", 100, 20, new Posicion(0, 0));
 
